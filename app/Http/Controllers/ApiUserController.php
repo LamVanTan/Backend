@@ -34,11 +34,19 @@ class ApiUserController extends Controller
            return response()->json($user);
         }
 
-        return response()->json(['error' => 'Sai ten email hoac passowrd'], 401);
+        return response()->json(['fail' => 'Sai ten email hoac passowrd'], 401);
     }
 
     public function userInfo(Request $request)
     {
         return response()->json($request->user('api'));
+    }
+
+    public function logout()
+    {
+        if (Auth::check()) {
+            Auth::user('api')->token()->revoke();
+           return response()->json(['message' => 'logout']);
+        }
     }
 }

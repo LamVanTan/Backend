@@ -19,6 +19,8 @@ Route::post('/login', 'ApiUserController@login');
 
 Route::get('/user', 'ApiUserController@userInfo')->middleware('auth:api');
 
+Route::post('/logout', 'ApiUserController@logout')->middleware('auth:api');
+
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
