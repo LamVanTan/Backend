@@ -1,0 +1,73 @@
+version: '2'
+
+services:
+    application:
+        container_name: backend_application
+        restart: always
+        image: debian
+        volumes:
+            - ./:/var/www/laravel
+    workspace:
+        container_name: backend_workspace
+        restart: always
+        image: framgia/laravel-workspace
+        volumes_from:
+            - application
+        tty: true
+    php-fpm:
+        container_name: backend_php-fpm
+        restart: always
+        image: framgia/laravel-php-fpm
+        volumes_from:
+            - application
+            - data
+        expose:
+            - "9000"
+        links:
+            - workspace
+    nginx:
+        container_name: backend_nginx
+        restart: always
+        image: framgia/laravel-nginx
+        volumes_from:
+            - data
+            - application
+        ports:
+            - "8088:80"
+        links:
+            - php-fpm
+    data:
+        container_name: backend_data
+        image: debian
+        volumes:
+            - .docker/mysql:/var/lib/mysql2
+            - .docker/data:/data
+            - .docker/logs/nginx:/var/log/nginx
+            - .docker/logs/php-fpm:/var/log/php-fpm
+            - .docker/logs/mysql:/var/log/mysql2
+
+    mysql:
+        container_name: backend_mysql
+        restart: always
+        image: mysql:5.7
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb_use_native_aio=0
+        volumes:
+            - ./.docker/provision/mysql/init:/docker-entrypoint-initdb.d
+        volumes_from:
+            - data
+        expose:
+            - "3306"
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+    # adminer:
+    #     restart: always
+    #     image: adminer
+    #     expose:
+    #         - "8080"
+    #     ports:
+    #         - "8035:808"
+    #     environment:
+    #         ADMINER_DEFAULT_SERVER: mysql
+    #         ADMINER_DESIGN: "pappu687"
