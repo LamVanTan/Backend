@@ -39,7 +39,6 @@ class ApiUserController extends Controller
 
     public function userInfo(Request $request)
     {
-        $user = User::find(5);
-        return response()->json($user);
+        return response()->json($request->user('api'));
     }
 }
