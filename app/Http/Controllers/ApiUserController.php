@@ -45,7 +45,7 @@ class ApiUserController extends Controller
     public function logout()
     {
         if (Auth::check()) {
-            Auth::user('api')->token()->revoke();
+            Auth::user('api')->token()->delete();
             return response()->json(['success' =>'logout_success'],200);
         }else{
             return response()->json(['error' =>'api.something_went_wrong'], 500);
