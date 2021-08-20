@@ -14,7 +14,7 @@ class ApiPostController extends Controller
      */
     public function index()
     {
-        $post = Post::where('status', 1)->latest()->paginate(10);
+        $post = Post::latest()->paginate(10);
 
         return response()->json($post);
     }
@@ -63,7 +63,8 @@ class ApiPostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::find($id);
+        return response()->json($post);
     }
 
     /**
@@ -75,7 +76,15 @@ class ApiPostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+    //    $post = Post::find($id);
+
+    //    $post->title = $request->title;
+    //    $post->content = $request->content;
+    //    $post->status = $request->status;
+
+       //$post->save();
+
+        return response()->json($request);
     }
 
     /**
@@ -87,5 +96,18 @@ class ApiPostController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function updatePost(Request $request, $id)
+    {
+       $post = Post::find($id);
+
+       $post->title = $request->title;
+       $post->content = $request->content;
+       $post->status = $request->status;
+
+       $post->save();
+
+        return response()->json($post);
     }
 }
