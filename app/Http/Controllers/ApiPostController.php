@@ -37,11 +37,21 @@ class ApiPostController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->get('slide_url'))
+        {
+            $image = $request->get('slide_url');
+            $name = time().'.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
+            \Image::make($request->get('slide_url'))->save(public_path('images/').$name);
+        }
+
         $post = new Post;
-        $post->fill( $request->all() );
+        $post->title = $request->title;
+        $post->content = $request->content;
+        $post->status = $request->status;
+        $post->slide_url = $name;
         $post->save();
 
-        return response()->json($post);
+        return response()->json(['message' => 'Thêm thành công', $post]);
     }
 
     /**
@@ -76,15 +86,7 @@ class ApiPostController extends Controller
      */
     public function update(Request $request, $id)
     {
-    //    $post = Post::find($id);
-
-    //    $post->title = $request->title;
-    //    $post->content = $request->content;
-    //    $post->status = $request->status;
-
-       //$post->save();
-
-        return response()->json($request);
+        //
     }
 
     /**
@@ -95,18 +97,47 @@ class ApiPostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::find($id);
+
+        $post->delete();
+
+        return response()->json(['message' => 'Xóa thành công']);
     }
 
     public function updatePost(Request $request, $id)
     {
-       $post = Post::find($id);
+        $post = Post::find($id);
 
-       $post->title = $request->title;
-       $post->content = $request->content;
-       $post->status = $request->status;
+        $post->title = $request->title;
+        $post->content = $request->content;
+        $post->status = $request->status;
 
-       $post->save();
+        $post->save();
+
+        return response()->json(['message' => 'Cập nhập thành công', $post]);
+    }
+
+    public function deletePost($id)
+    {
+        $post = Post::find($id);
+
+        $post->delete();
+
+        return response()->json(['message' => 'Xóa thành công']);
+    }
+
+    
+
+    public function getListPostPublic()
+    {
+        $post = Post::where('status', '=', 1)->paginate(10);
+
+        return response()->json($post);
+    }
+
+    public function getPostDetail($id) 
+    {
+        $post = Post::find($id);
 
         return response()->json($post);
     }
